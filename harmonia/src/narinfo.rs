@@ -22,7 +22,7 @@ struct NarInfo {
     references: Vec<String>,
     deriver: Option<String>,
     system: Option<String>,
-    sig: Option<String>,
+    sig: Vec<String>,
     ca: Option<String>,
 }
 
@@ -73,7 +73,7 @@ fn extract_filename(path: &str) -> Option<String> {
 fn query_narinfo(
     store_path: &str,
     hash: &str,
-    sign_key: Option<&str>,
+    sign_keys: &Vec<String>,
 ) -> Result<NarInfo, Box<dyn Error>> {
     let path_info = libnixstore::query_path_info(store_path, Radix::default())?;
     let mut res = NarInfo {
@@ -89,7 +89,7 @@ fn query_narinfo(
         references: vec![],
         deriver: None,
         system: None,
-        sig: None,
+        sig: vec![],
         ca: path_info.ca,
     };
 
@@ -110,10 +110,10 @@ fn query_narinfo(
         }
     }
 
-    if let Some(sk) = sign_key {
+    for sk in sign_keys {
         let fingerprint = fingerprint_path(store_path, &res.nar_hash, res.nar_size, &refs)?;
         if let Some(fp) = fingerprint {
-            res.sig = Some(libnixstore::sign_string(sk, &fp)?);
+            res.sig.push(libnixstore::sign_string(sk, &fp)?);
         }
     }
 
@@ -143,7 +143,7 @@ fn format_narinfo_txt(narinfo: &NarInfo) -> String {
         res.push(format!("System: {}", sys));
     }
 
-    if let Some(sig) = &narinfo.sig {
+    for sig in &narinfo.sig {
         res.push(format!("Sig: {}", sig));
     }
 
@@ -162,7 +162,7 @@ pub(crate) async fn get(
 ) -> Result<HttpResponse, Box<dyn Error>> {
     let hash = hash.into_inner();
     let store_path = some_or_404!(nixhash(&hash));
-    let narinfo = query_narinfo(&store_path, &hash, settings.secret_key.as_deref())?;
+    let narinfo = query_narinfo(&store_path, &hash, &settings.secret_keys)?;
 
     if param.json.is_some() {
         Ok(HttpResponse::Ok()

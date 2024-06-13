@@ -34,17 +34,17 @@ pub(crate) struct Config {
     pub(crate) priority: usize,
     #[serde(default)]
     pub(crate) sign_key_path: Option<String>,
+    #[serde(default)]
+    pub(crate) sign_key_paths: Vec<String>,
 
-    #[serde(skip)]
-    pub(crate) secret_key: Option<String>,
+    #[serde(skip, default)]
+    pub(crate) secret_keys: Vec<String>,
     #[serde(skip)]
     pub(crate) store: Store,
 }
 
 fn get_secret_key(sign_key_path: Option<&str>) -> Result<Option<String>> {
-    let env_key = std::env::var("SIGN_KEY_PATH").ok();
-    let k = sign_key_path.or(env_key.as_deref());
-    if let Some(path) = k {
+    if let Some(path) = sign_key_path {
         let sign_key = read_to_string(path)
             .with_context(|| format!("Couldn't read sign_key file '{path}'"))?;
         let (_sign_host, sign_key64) = sign_key
@@ -68,7 +68,22 @@ pub(crate) fn load() -> Result<Config> {
             .with_context(|| format!("Couldn't read config file '{settings_file}'"))?,
     )
     .with_context(|| format!("Couldn't parse config file '{settings_file}'"))?;
-    settings.secret_key = get_secret_key(settings.sign_key_path.as_deref())?;
+    if let Some(sign_key_path) = &settings.sign_key_path {
+        settings.sign_key_paths.push(sign_key_path.to_string());
+    }
+    if let Ok(sign_key_path) = std::env::var("SIGN_KEY_PATH") {
+        settings.sign_key_paths.push(sign_key_path.to_string());
+    }
+    if let Ok(sign_key_paths) = std::env::var("SIGN_KEY_PATHS") {
+        for sign_key_path in sign_key_paths.split_whitespace() {
+            settings.sign_key_paths.push(sign_key_path.to_string());
+        }
+    }
+    for sign_key_path in &settings.sign_key_paths {
+        if let Some(sk) = get_secret_key(Some(sign_key_path))? {
+            settings.secret_keys.push(sk);
+        }
+    }
     settings.store = Store::new();
     Ok(settings)
 }
