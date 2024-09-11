@@ -45,8 +45,8 @@
               t02-varnish = import ./tests/t02-varnish.nix testArgs;
               t03-chroot = import ./tests/t03-chroot.nix testArgs;
               test-package = pkgs.writeText "test-package" (import ./number.nix);
-              # test-failing-package = pkgs.runCommand "test-failing-package" {} "exit 1";
-	      # depend-failing-package = pkgs.writeText "depend-failing-package" ''${config.checks.test-failing-package}'';
+              test-failing-package = pkgs.runCommand "test-failing-package" {} "exit 1";
+	      depend-failing-package = pkgs.writeText "depend-failing-package" ''${config.checks.test-failing-package}'';
             } // {
             # clippy = config.packages.harmonia.override ({
             #   enableClippy = true;
