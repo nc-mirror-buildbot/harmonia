@@ -31,7 +31,7 @@
 
       flake.herculesCI = (x: { 
         onPush.default.outputs.effects.test.run = [ 
-          ((inputs.nixpkgs.legacyPackages."x86_64-linux").writeShellScript "test-effect.sh" ''
+          ((inputs.nixpkgs.legacyPackages."x86_64-linux").runCommand "test-effect.sh" {} ''
             echo "hello from test effect"
             touch $out
           '')
