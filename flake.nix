@@ -36,7 +36,7 @@
           (pkgs.stdenv.mkDerivation {
             name = "test";
             phases = [
-              "run"
+              "runPhase"
             ];
             runPhase = ''
               echo "hello from test effect"
