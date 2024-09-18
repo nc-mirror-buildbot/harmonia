@@ -29,7 +29,7 @@
         inputs.treefmt-nix.flakeModule
       ];
 
-      flake.herculesCI.effects.onPush.default.outputs.effects.test = (inputs.nixpkgs.legacyPackages."x86_64-linux").runCommand "test-effect" {} ''
+      flake.herculesCI = (x: effects.onPush.default.outputs.effects.test = (inputs.nixpkgs.legacyPackages."x86_64-linux").runCommand "test-effect" {} '')
         echo "hello from test effect"
         touch $out
       '';
