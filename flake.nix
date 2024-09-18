@@ -29,10 +29,14 @@
         inputs.treefmt-nix.flakeModule
       ];
 
-      flake.herculesCI = (x: effects.onPush.default.outputs.effects.test = (inputs.nixpkgs.legacyPackages."x86_64-linux").runCommand "test-effect" {} '')
-        echo "hello from test effect"
-        touch $out
-      '';
+      flake.herculesCI = (x: { 
+        onPush.default.outputs.effects.test.run = [ 
+          ((inputs.nixpkgs.legacyPackages."x86_64-linux").writeShellScript "test-effect.sh" ''
+            echo "hello from test effect"
+            touch $out
+          '')
+         ];
+      });
       perSystem = { lib, config, pkgs, ... }: {
         packages.harmonia = pkgs.callPackage ./. { };
         packages.default = config.packages.harmonia;
