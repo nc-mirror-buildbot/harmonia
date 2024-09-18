@@ -28,6 +28,10 @@
       imports = [
         inputs.treefmt-nix.flakeModule
       ];
+
+      flake.herculesCI.effecks.onPush.default.outputs.effects.test = pkgs.runCommand "test-effect" {} ''
+        echo "hello from test effect"
+      '';
       perSystem = { lib, config, pkgs, ... }: {
         packages.harmonia = pkgs.callPackage ./. { };
         packages.default = config.packages.harmonia;
