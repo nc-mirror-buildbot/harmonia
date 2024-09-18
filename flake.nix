@@ -29,12 +29,20 @@
         inputs.treefmt-nix.flakeModule
       ];
 
-      flake.herculesCI = (x: { 
-        onPush.default.outputs.effects.test.run = [ 
-          ((inputs.nixpkgs.legacyPackages."x86_64-linux").runCommand "test-effect.sh" {} ''
-            echo "hello from test effect"
-            touch $out
-          '')
+      flake.herculesCI = (x: let
+        pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux";
+      in {
+        onPush.default.outputs.effects.test.run = [
+          (pkgs.stdenv.mkDerivation {
+            name = "test";
+            phases = [
+              "run"
+            ];
+            runPhase = ''
+              echo "hello from test effect"
+              touch $out
+            '';
+          })
          ];
       });
       perSystem = { lib, config, pkgs, ... }: {
