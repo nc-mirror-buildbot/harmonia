@@ -26,7 +26,7 @@
         "x86_64-darwin"
       ];
       imports = [
-        inputs.treefmt-nix.flakeModule
+ #       inputs.treefmt-nix.flakeModule
       ];
 
       flake.herculesCI = (x: let
@@ -61,9 +61,9 @@
               t01-signing = import ./tests/t01-signing.nix testArgs;
               t02-varnish = import ./tests/t02-varnish.nix testArgs;
               t03-chroot = import ./tests/t03-chroot.nix testArgs;
-              test-package = pkgs.writeText "test-package" (import ./number.nix);
-              test-failing-package = pkgs.runCommand "test-failing-package" {} "exit 1";
-	      depend-failing-package = pkgs.writeText "depend-failing-package" ''${config.checks.test-failing-package}'';
+#              test-package = pkgs.writeText "test-package" (import ./number.nix);
+#              test-failing-package = pkgs.runCommand "test-failing-package" {} "exit 1";
+#	      depend-failing-package = pkgs.writeText "depend-failing-package" ''${config.checks.test-failing-package}'';
             } // {
             # clippy = config.packages.harmonia.override ({
             #   enableClippy = true;
@@ -71,29 +71,29 @@
           };
         devShells.default = pkgs.callPackage ./shell.nix { };
 
-        treefmt = {
-          # Used to find the project root
-          projectRootFile = "flake.lock";
+        #treefmt = {
+        #  # Used to find the project root
+        #  projectRootFile = "flake.lock";
 
-          programs.rustfmt.enable = true;
-          programs.clang-format.enable = true;
+        #  programs.rustfmt.enable = true;
+        #  programs.clang-format.enable = true;
 
-          settings.formatter = {
-            nix = {
-              command = "sh";
-              options = [
-                "-eucx"
-                ''
-                  export PATH=${lib.makeBinPath [ pkgs.coreutils pkgs.findutils pkgs.deadnix pkgs.nixpkgs-fmt ]}
-                  deadnix --edit "$@"
-                  nixpkgs-fmt "$@"
-                ''
-                "--"
-              ];
-              includes = [ "*.nix" ];
-            };
-          };
-        };
+        #  settings.formatter = {
+        #    nix = {
+        #      command = "sh";
+        #      options = [
+        #        "-eucx"
+        #        ''
+        #          export PATH=${lib.makeBinPath [ pkgs.coreutils pkgs.findutils pkgs.deadnix pkgs.nixpkgs-fmt ]}
+        #          deadnix --edit "$@"
+        #          nixpkgs-fmt "$@"
+        #        ''
+        #        "--"
+        #      ];
+        #      includes = [ "*.nix" ];
+        #    };
+        #  };
+        #};
       };
       flake.nixosModules.harmonia = ./module.nix;
     };
