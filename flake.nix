@@ -61,8 +61,8 @@
               t01-signing = import ./tests/t01-signing.nix testArgs;
               t02-varnish = import ./tests/t02-varnish.nix testArgs;
               t03-chroot = import ./tests/t03-chroot.nix testArgs;
-              test-package = pkgs.writeText "test-package" '' 
-                sleep 60
+              test-package = pkgs.runCommand "test-package" {} '' 
+                sleep 30
                 ${toString (import ./number.nix)} 
               '';
 #             test-failing-package = pkgs.runCommand "test-failing-package" {} "exit 1";
