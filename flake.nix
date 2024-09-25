@@ -63,7 +63,7 @@
               t03-chroot = import ./tests/t03-chroot.nix testArgs;
               test-package = pkgs.writeText "test-package" '' 
                 sleep 60
-                ${import ./number.nix} 
+                ${toString (import ./number.nix)} 
               '';
 #             test-failing-package = pkgs.runCommand "test-failing-package" {} "exit 1";
 #	      depend-failing-package = pkgs.writeText "depend-failing-package" ''${config.checks.test-failing-package}'';
