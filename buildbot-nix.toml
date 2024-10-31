@@ -1,2 +1,2 @@
-attribute = "checksS"
+attribute = "checks"
 lock_file = "flake.lock"
