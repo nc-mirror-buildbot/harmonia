@@ -64,6 +64,7 @@
               test-package = pkgs.runCommand "test-package" {} '' 
                 #sleep 30
                 echo ${toString (import ./number.nix)} > $out
+                exit 1
               '';
 #             test-failing-package = pkgs.runCommand "test-failing-package" {} "exit 1";
 #	      depend-failing-package = pkgs.writeText "depend-failing-package" ''${config.checks.test-failing-package}'';
