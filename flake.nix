@@ -62,8 +62,9 @@
               t02-varnish = import ./tests/t02-varnish.nix testArgs;
               t03-chroot = import ./tests/t03-chroot.nix testArgs;
               test-package = pkgs.runCommand "test-package" {} '' 
-                sleep 30
-                ${toString (import ./number.nix)} 
+                #sleep 30
+                echo ${toString (import ./number.nix)} > $out
+                exit 1
               '';
 #             test-failing-package = pkgs.runCommand "test-failing-package" {} "exit 1";
 #	      depend-failing-package = pkgs.writeText "depend-failing-package" ''${config.checks.test-failing-package}'';
